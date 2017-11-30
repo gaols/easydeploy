@@ -36,3 +36,7 @@ deployer.OnceDoneDeploy(func(isDeployOk bool) error {
 deployer.Verbose()
 deployer.Start()
 ```
+
+## So easy to deploy
+
+[A simple deploy sample](https://github.com/gaols/easydeploy/blob/master/example/deploy.go)
