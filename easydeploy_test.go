@@ -20,3 +20,14 @@ func TestNewSrvConf(t *testing.T) {
 	}
 	t.Log(sc)
 }
+
+func TestDeployer(t *testing.T) {
+	deployer := &Deployer{}
+	deployer.Local("/path/to/your/prepare-artifacts.sh")
+	deployer.Upload("/path/to/your/artifacts", "/path/to/remote")
+	deployer.Remote("/path/to/your/restart-server-on-remote.sh")
+	deployer.OnceDoneDeploy(func(deployOk bool) error {
+		return nil
+	})
+	deployer.Start()
+}
