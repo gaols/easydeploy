@@ -9,7 +9,7 @@ func main() {
 				User:     "gaols",
 				Server:   "192.168.2.155",
 				Port:     "22",
-				Password: "gaolsz",
+				Password: "******",
 			},
 		},
 	}

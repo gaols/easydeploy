@@ -84,5 +84,5 @@ func vOut(srvConf *ServerConfig, output string) {
 }
 
 func vOutCommand(srvConf *ServerConfig, cmd string, cmdType string) {
-	vOut(srvConf, fmt.Sprintf("[%s] Run %s command: %s", srvConf.Simple(), cmdType, cmd))
+	vOut(srvConf, fmt.Sprintf("Run %s command: %s", cmdType, cmd))
 }
