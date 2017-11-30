@@ -76,10 +76,12 @@ func (sc *Deployer) Upload(localPath, remotePath string) {
 func (sc *Deployer) Start() []*DeployReport {
 	reportChan := make(chan *DeployReport, len(sc.SrvConf))
 	ret := make([]*DeployReport, 0, len(sc.SrvConf))
-	err := sc.onceBeforeFn()
-	if err != nil {
-		sc.onceDoneFn(false)
-		return nil
+	if sc.onceBeforeFn != nil {
+		err := sc.onceBeforeFn()
+		if err != nil {
+			sc.onceDoneFn(false)
+			return nil
+		}
 	}
 
 	for _, s := range sc.SrvConf {
@@ -96,8 +98,10 @@ L:
 		}
 	}
 
-	if err := sc.onceDoneFn(true); err != nil {
-		fmt.Println("once done error: ", err.Error())
+	if sc.onceDoneFn != nil {
+		if err := sc.onceDoneFn(true); err != nil {
+			fmt.Println("once done error: ", err.Error())
+		}
 	}
 	return ret
 }
@@ -110,14 +114,14 @@ func startDeployment(sc *Deployer, srvConf *ServerConfig, Commands []Command, re
 		rp.Start = time.Now()
 		for i, cmd := range Commands {
 			err := cmd.Run(sc, srvConf)
-			rp.Consumed = time.Now().Unix() - rp.Start.Unix()
+			rp.CmdRuns = i + 1
 			if err != nil {
 				rp.error = err
 				break
 			}
-			rp.CmdRuns = i + 1
-			reportChan <- rp
 		}
+		rp.Consumed = time.Now().Unix() - rp.Start.Unix()
+		reportChan <- rp
 	}()
 }
 

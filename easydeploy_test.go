@@ -22,11 +22,16 @@ func TestNewSrvConf(t *testing.T) {
 }
 
 func TestDeployer(t *testing.T) {
-	deployer := &Deployer{}
+	deployer := &Deployer{
+		SrvConf: []*ServerConfig{
+			NewSrvConf("gaols@192.168.1.100:22/123456"),
+		},
+	}
+
 	deployer.Local("/path/to/your/prepare-artifacts.sh")
 	deployer.Upload("/path/to/your/artifacts", "/path/to/remote")
 	deployer.Remote("/path/to/your/restart-server-on-remote.sh")
-	deployer.OnceDoneDeploy(func(deployOk bool) error {
+	deployer.OnceDoneDeploy(func(isDeployOk bool) error {
 		return nil
 	})
 	deployer.Start()

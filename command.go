@@ -80,7 +80,7 @@ func isBlank(str string) bool {
 }
 
 func vOut(srvConf *ServerConfig, output string) {
-	fmt.Sprintf("[%s] %s", srvConf.Simple(), output)
+	fmt.Printf("[%s] %s\n", srvConf.Simple(), output)
 }
 
 func vOutCommand(srvConf *ServerConfig, cmd string, cmdType string) {
