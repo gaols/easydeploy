@@ -1,6 +1,8 @@
 package easydeploy
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewSrvConf(t *testing.T) {
 	sc := NewSrvConf("gaols@192.168.1.100:22/password@**/")

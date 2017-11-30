@@ -3,10 +3,11 @@ package easydeploy
 import (
 	"github.com/gaols/easyssh"
 	"strings"
+	"fmt"
 )
 
 type Command interface {
-	Run(deployCtx *Deploy, srvConf *ServerConfig) error
+	Run(deployCtx Deploy, srvConf *ServerConfig) error
 }
 
 type LocalCommand struct {
@@ -15,7 +16,7 @@ type LocalCommand struct {
 }
 
 type RemoteCommand struct {
-	CmdStr  string
+	CmdStr string
 }
 
 type UploadCommand struct {
@@ -23,37 +24,65 @@ type UploadCommand struct {
 	RemotePath string
 }
 
-func (localCmd *LocalCommand) Run(deployCtx *Deploy, srvConf *ServerConfig) error {
+func (localCmd *LocalCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
 	if isBlank(localCmd.CmdStr) {
 		panic("missing local command")
 	}
 
-	_, err := easyssh.Local(localCmd.CmdStr)
+	vOutCommand(srvConf, localCmd.CmdStr, "local")
+	out, err := easyssh.Local(localCmd.CmdStr)
+	if deployCtx.isVerbose() {
+		vOut(srvConf, out)
+	}
 	return err
 }
 
-func (remoteCommand *RemoteCommand) Run(deployCtx *Deploy, srvConf *ServerConfig) error {
-	if isBlank(remoteCommand.CmdStr) {
+func (remoteCmd *RemoteCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
+	if isBlank(remoteCmd.CmdStr) {
 		panic("missing remote command")
 	}
+	vOutCommand(srvConf, remoteCmd.CmdStr, "remote")
 
 	ssh := srvConf.MakeSSHConfig()
-	_, _, _, err := ssh.Run(remoteCommand.CmdStr, -1)
+	_, err := ssh.RtRun(remoteCmd.CmdStr, func(line string) {
+		if deployCtx.isVerbose() {
+			vOut(srvConf, line)
+		}
+	}, func(line string) {
+		if deployCtx.isVerbose() {
+			vOut(srvConf, line)
+		}
+	}, -1)
 	return err
 }
 
-func (uploadCommand *UploadCommand) Run(deployCtx *Deploy, srvConf *ServerConfig) error {
-	if isBlank(uploadCommand.LocalPath) {
+func (uploadCmd *UploadCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
+	if isBlank(uploadCmd.LocalPath) {
 		panic("missing local path for uploading")
 	}
 
-	if isBlank(uploadCommand.RemotePath) {
+	if isBlank(uploadCmd.RemotePath) {
 		panic("missing remote path for uploading")
 	}
+	uploadM := fmt.Sprintf("%s -> %s", uploadCmd.LocalPath, uploadCmd.RemotePath)
+	vOutCommand(srvConf, uploadM, "upload")
+
 	ssh := srvConf.MakeSSHConfig()
-	return ssh.Scp(uploadCommand.LocalPath, uploadCommand.RemotePath)
+	err := ssh.Scp(uploadCmd.LocalPath, uploadCmd.RemotePath)
+	if err == nil && deployCtx.isVerbose() {
+		vOut(srvConf, fmt.Sprintf("%s upload ok", uploadM))
+	}
+	return err
 }
 
 func isBlank(str string) bool {
 	return len(strings.TrimSpace(str)) == 0
+}
+
+func vOut(srvConf *ServerConfig, output string) {
+	fmt.Sprintf("[%s] %s", srvConf.Simple(), output)
+}
+
+func vOutCommand(srvConf *ServerConfig, cmd string, cmdType string) {
+	vOut(srvConf, fmt.Sprintf("[%s] Run %s command: %s", srvConf.Simple(), cmdType, cmd))
 }
