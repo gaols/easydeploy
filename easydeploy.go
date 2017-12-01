@@ -15,6 +15,7 @@ type Deploy interface {
 	Local(cmd string, args ...interface{})
 	Remote(cmd string, args ...interface{})
 	Upload(localPath, remotePath string)
+	MaxConcurrency(num int)
 	Start() []*DeployReport
 	Verbose()
 	isVerbose() bool
@@ -34,6 +35,7 @@ type Deployer struct {
 	onceDoneFn   func(bool) error
 	onceBeforeFn func() error
 	verbose      bool
+	concurrency  int
 }
 
 // readonly
@@ -74,8 +76,6 @@ func (sc *Deployer) Upload(localPath, remotePath string) {
 
 // Start will start the deploy process
 func (sc *Deployer) Start() []*DeployReport {
-	reportChan := make(chan *DeployReport, len(sc.SrvConf))
-	ret := make([]*DeployReport, 0, len(sc.SrvConf))
 	if sc.onceBeforeFn != nil {
 		err := sc.onceBeforeFn()
 		if err != nil {
@@ -84,8 +84,15 @@ func (sc *Deployer) Start() []*DeployReport {
 		}
 	}
 
+	ret := make([]*DeployReport, 0, len(sc.SrvConf))
+	if sc.concurrency == 0 || sc.concurrency > len(sc.SrvConf) {
+		sc.concurrency = len(sc.SrvConf)
+	}
+
+	reportChan := make(chan *DeployReport, len(sc.SrvConf))
+	ctrlChan := make(chan int8, sc.concurrency)
 	for _, s := range sc.SrvConf {
-		startDeployment(sc, s, sc.commands, reportChan)
+		startDeployment(sc, s, sc.commands, reportChan, ctrlChan)
 	}
 L:
 	for {
@@ -106,13 +113,18 @@ L:
 	return ret
 }
 
-func startDeployment(sc *Deployer, srvConf *ServerConfig, Commands []Command, reportChan chan *DeployReport) {
+func startDeployment(sc *Deployer, srvConf *ServerConfig, Cmds []Command, reportChan chan *DeployReport, ctrlChan chan int8) {
 	rp := &DeployReport{
 		SrvConf: srvConf,
 	}
 	go func() {
+		ctrlChan <- 0
+		defer func() {
+			<-ctrlChan
+		}()
+
 		rp.Start = time.Now()
-		for i, cmd := range Commands {
+		for i, cmd := range Cmds {
 			err := cmd.Run(sc, srvConf)
 			rp.CmdRuns = i + 1
 			if err != nil {
@@ -143,6 +155,12 @@ func (sc *Deployer) Verbose() {
 // Verbose should be called before deployment start if you want to see the each command output.
 func (sc *Deployer) isVerbose() bool {
 	return sc.verbose
+}
+
+// MaxConcurrency controls how many deployments will run simultaneously if you deploy to multiple servers.
+// 0 means all deployments will start asynchronously.
+func (sc *Deployer) MaxConcurrency(num int) {
+	sc.concurrency = num
 }
 
 func (sc *ServerConfig) MakeSSHConfig() *easyssh.SSHConfig {

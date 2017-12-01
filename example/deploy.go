@@ -19,7 +19,7 @@ func main() {
 	deployer.Upload("/home/gaols/Codes/go/src/github.com/gaols/easydeploy", "/tmp/")
 	deployer.Remote("ps aufx")
 	deployer.OnceDoneDeploy(func(deployOk bool) error {
-		_, err := easyssh.Local("ls -l /home/tmp")
+		_, err := easyssh.Local("ls -l /tmp")
 		return err
 	})
 	deployer.Verbose()
