@@ -12,7 +12,6 @@ type Command interface {
 
 type LocalCommand struct {
 	CmdStr  string
-	SrvConf *ServerConfig
 }
 
 type RemoteCommand struct {
