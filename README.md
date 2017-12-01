@@ -1,9 +1,5 @@
 # easydeploy
 
-## Description
-
-Package easydeploy makes your deployment easy.
-
 ## Deployment
 
 To my opinion, a simple deployment just the following four steps:
@@ -16,6 +12,11 @@ To my opinion, a simple deployment just the following four steps:
 Now with easydeploy you can:
 
 ```
+import (
+	"github.com/gaols/easydeploy"
+	"github.com/gaols/easyssh"
+)
+
 deployer := &easydeploy.Deployer{
     SrvConf: []*easydeploy.ServerConfig{
         easydeploy.NewSrvConf("gaols@192.168.1.100:22/123456"),
@@ -31,11 +32,21 @@ deployer.Upload("/path/to/your/artifacts", "/path/to/remote")
 deployer.Remote("/path/to/your/restart-server-on-remote.sh")
 // step 4
 deployer.OnceDoneDeploy(func(isDeployOk bool) error {
-    return nil
+    _, err := easyssh.Local("ls -l /home/tmp")
+    return err
 })
 deployer.Verbose()
 deployer.Start()
 ```
+
+## Notes
+
+1. `Upload(localPath, remotePath string)` upload a local file or local dir to its corresponding remote path, the remotePath 
+should contain the file name if the localPath is a regular file, however, if the localPath to copy is dir, the remotePath must
+be the dir into which the localPath will be copied.
+2. The local commands and remote commands you registered by calling `Local/Remote/Upload` to deployer will not run until
+`Start()` method being called. 
+3. If you'd like to run the local or remote shell command manually, please refer to [easyssh](https://github.com/gaols/easyssh).
 
 ## So easy to deploy
 
