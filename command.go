@@ -68,7 +68,7 @@ func (uploadCmd *UploadCommand) Run(deployCtx Deploy, srvConf *ServerConfig) err
 	vOutCommand(srvConf, uploadM, "upload")
 
 	ssh := srvConf.MakeSSHConfig()
-	err := ssh.Scp(uploadCmd.LocalPath, uploadCmd.RemotePath)
+	err := ssh.SafeScp(uploadCmd.LocalPath, uploadCmd.RemotePath)
 	if err == nil && deployCtx.isVerbose() {
 		vOut(srvConf, fmt.Sprintf("%s upload ok", uploadM))
 	}
