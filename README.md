@@ -6,7 +6,7 @@ To my opinion, a simple deployment just the following four steps:
 
 * prepare the artifacts to be deployed
 * put the prepared artifacts to your deploy servers
-* restart servers
+* restart deploy servers
 * do some clean
 
 Now with easydeploy you can:
