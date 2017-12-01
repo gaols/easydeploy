@@ -27,6 +27,16 @@ type DeployReport struct {
 	Start    time.Time
 	Consumed int64
 	CmdRuns  int
+	Cmds     int
+}
+
+func (rp *DeployReport) String() string {
+	report := "\n[%s] Deploy Report:\nCommands total: %d\nCommands runs : %d\nDeploy result : %s, Consumed: %ds\n"
+	deployResult := "OK"
+	if rp.error != nil {
+		deployResult = "FAIL"
+	}
+	return fmt.Sprintf(report, rp.SrvConf.Simple(), rp.Cmds, rp.CmdRuns, deployResult, rp.Consumed)
 }
 
 type Deployer struct {
@@ -98,6 +108,7 @@ L:
 	for {
 		select {
 		case rp := <-reportChan:
+			fmt.Print(rp)
 			ret = append(ret, rp)
 			if len(ret) == len(sc.SrvConf) {
 				break L
@@ -116,6 +127,7 @@ L:
 func startDeployment(sc *Deployer, srvConf *ServerConfig, Cmds []Command, reportChan chan *DeployReport, ctrlChan chan int8) {
 	rp := &DeployReport{
 		SrvConf: srvConf,
+		Cmds:    len(Cmds),
 	}
 	go func() {
 		ctrlChan <- 0
