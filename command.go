@@ -11,7 +11,7 @@ type Command interface {
 }
 
 type LocalCommand struct {
-	CmdStr  string
+	CmdStr string
 }
 
 type RemoteCommand struct {
@@ -84,4 +84,20 @@ func vOut(srvConf *ServerConfig, output string) {
 
 func vOutCommand(srvConf *ServerConfig, cmd string, cmdType string) {
 	vOut(srvConf, fmt.Sprintf("Run %s command: %s", cmdType, cmd))
+}
+
+type SimpleCommand struct {
+	Handler func(Deploy, *ServerConfig, ...interface{}) error
+	Args    []interface{}
+}
+
+func (cmd *SimpleCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
+	return cmd.Handler(deployCtx, srvConf, cmd.Args...)
+}
+
+func BuildSimpleCommand(fn func(Deploy, *ServerConfig, ...interface{}) error, args ...interface{}) Command {
+	return &SimpleCommand{
+		Handler: fn,
+		Args:    args,
+	}
 }

@@ -15,6 +15,7 @@ type Deploy interface {
 	Local(cmd string, args ...interface{})
 	Remote(cmd string, args ...interface{})
 	Upload(localPath, remotePath string)
+	AddCommand(command Command)
 	MaxConcurrency(num int)
 	Start() []*DeployReport
 	Verbose()
@@ -82,6 +83,11 @@ func (sc *Deployer) Upload(localPath, remotePath string) {
 		LocalPath:  localPath,
 		RemotePath: remotePath,
 	})
+}
+
+// Register a custom command
+func (sc *Deployer) AddCommand(command Command) {
+	sc.commands = append(sc.commands, command)
 }
 
 // Start will start the deploy process
