@@ -1,7 +1,6 @@
 package easydeploy
 
 import (
-	"path/filepath"
 	"github.com/gaols/easyssh"
 	"errors"
 	"fmt"
@@ -17,10 +16,7 @@ func Tar(tgzPath, targetPath string) Command {
 			return errors.New(fmt.Sprintf("invalid args: %s", args))
 		}
 
-		targetPathDir := filepath.Dir(easyssh.RemoveTrailingSlash(targetPath))
-		target := filepath.Base(easyssh.RemoveTrailingSlash(targetPath))
-		_, err := easyssh.Local("tar czf %s -C %s %s", tgzPath, targetPathDir, target)
-		return err
+		return easyssh.Tar(tgzPath, targetPath)
 	}, tgzPath, targetPath)
 }
 
@@ -34,7 +30,6 @@ func UnTar(tgzPath, targetPath string) Command {
 			return errors.New(fmt.Sprintf("invalid args: %s", args))
 		}
 
-		_, err := easyssh.Local("tar xf %s -C %s", tgzPath, targetPath)
-		return err
+		return easyssh.UnTar(tgzPath, targetPath)
 	}, tgzPath, targetPath)
 }
