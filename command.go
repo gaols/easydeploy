@@ -43,11 +43,7 @@ func (remoteCmd *RemoteCommand) Run(deployCtx Deploy, srvConf *ServerConfig) err
 	vOutCommand(srvConf, remoteCmd.CmdStr, "remote")
 
 	ssh := srvConf.MakeSSHConfig()
-	_, err := ssh.RtRun(remoteCmd.CmdStr, func(line string) {
-		if deployCtx.isVerbose() {
-			vOut(srvConf, line)
-		}
-	}, func(line string) {
+	_, err := ssh.RtRun(remoteCmd.CmdStr, func(line string, lineType int) {
 		if deployCtx.isVerbose() {
 			vOut(srvConf, line)
 		}
