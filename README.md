@@ -46,7 +46,8 @@ should contain the file name if the localPath is a regular file, however, if the
 be the dir into which the localPath will be copied.
 2. The local commands and remote commands you registered by calling `Local/Remote/Upload` to deployer will not run until
 `Start()` method being called. 
-3. If you'd like to run the local or remote shell command manually, please refer to [easyssh](https://github.com/gaols/easyssh).
+3. `Local/Remote/Upload` method can be called multiple times to fit your deployment needs.  
+4. If you'd like to run the local or remote shell command manually, please refer to [easyssh](https://github.com/gaols/easyssh).
 
 ## So easy to deploy
 
