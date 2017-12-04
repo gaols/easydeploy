@@ -19,11 +19,11 @@ func TestUnTar(t *testing.T) {
 	cmd.Run(nil, nil)
 	cmd = UnTar("/tmp/easydeploy.tar.gz", "/tmp/")
 	cmd.Run(nil, nil)
+	defer easyssh.Local("cd /tmp;rm -f easydeploy.tar.gz")
+	defer easyssh.Local("cd /tmp;rm -rf easydeploy")
 
 	if !easyssh.IsDir("/tmp/easydeploy") {
 		t.Error("untar command failed")
 	}
 
-	defer easyssh.Local("cd /tmp;rm -f easydeploy.tar.gz")
-	defer easyssh.Local("cd /tmp;rm -rf easydeploy")
 }
