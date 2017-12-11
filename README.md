@@ -11,7 +11,7 @@ To my opinion, a simple deployment just the following four steps:
 
 Now with easydeploy you can:
 
-```
+```go
 import (
 	"github.com/gaols/easydeploy"
 	"github.com/gaols/easyssh"
