@@ -29,10 +29,12 @@ func (localCmd *LocalCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error
 	}
 
 	vOutCommand(srvConf, localCmd.CmdStr, "local")
-	out, err := easyssh.Local(localCmd.CmdStr)
-	if deployCtx.isVerbose() {
-		vOut(srvConf, out)
-	}
+	err := easyssh.RtLocal(localCmd.CmdStr, func(line string, lineType int8) {
+		if deployCtx.isVerbose() {
+			vOut(srvConf, line)
+		}
+	})
+
 	return err
 }
 
