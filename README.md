@@ -35,7 +35,6 @@ deployer.OnceDoneDeploy(func(isDeployOk bool) error {
     _, err := easyssh.Local("ls -l /home/tmp")
     return err
 })
-deployer.Verbose()
 deployer.Start()
 ```
 

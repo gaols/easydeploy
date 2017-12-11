@@ -22,6 +22,5 @@ func main() {
 		_, err := easyssh.Local("ls -l /tmp")
 		return err
 	})
-	deployer.Verbose()
 	deployer.Start()
 }
