@@ -18,7 +18,7 @@ type Deploy interface {
 	AddCommand(command Command)
 	MaxConcurrency(num int)
 	Start() []*DeployReport
-	Verbose()
+	Verbose(verbose bool)
 	isVerbose() bool
 }
 
@@ -41,12 +41,13 @@ func (rp *DeployReport) String() string {
 }
 
 type Deployer struct {
-	SrvConf      []*ServerConfig
-	commands     []Command
-	onceDoneFn   func(bool) error
-	onceBeforeFn func() error
-	verbose      bool
-	concurrency  int
+	SrvConf       []*ServerConfig
+	commands      []Command
+	onceDoneFn    func(bool) error
+	onceBeforeFn  func() error
+	verbose       bool
+	verboseCalled bool
+	concurrency   int
 }
 
 // readonly
@@ -92,6 +93,11 @@ func (sc *Deployer) AddCommand(command Command) {
 
 // Start will start the deploy process
 func (sc *Deployer) Start() []*DeployReport {
+	if !sc.verboseCalled {
+		// default verbose
+		sc.verbose = true
+	}
+
 	if sc.onceBeforeFn != nil {
 		err := sc.onceBeforeFn()
 		if err != nil {
@@ -166,8 +172,9 @@ func (sc *Deployer) OnceDoneDeploy(fn func(bool) error) {
 }
 
 // Verbose should be called before deployment start if you want to see the each command output.
-func (sc *Deployer) Verbose() {
-	sc.verbose = true
+func (sc *Deployer) Verbose(verbose bool) {
+	sc.verboseCalled = true
+	sc.verbose = verbose
 }
 
 // Verbose should be called before deployment start if you want to see the each command output.
