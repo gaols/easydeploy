@@ -66,7 +66,7 @@ func (sc *Deployer) Local(cmd string, args ...interface{}) {
 	})
 }
 
-// Local register a command to be run on localhost
+// RegisterDeployServer register a deploy server
 func (sc *Deployer) RegisterDeployServer(srvConf *ServerConfig) {
 	sc.SrvConf = append(sc.SrvConf, srvConf)
 }
