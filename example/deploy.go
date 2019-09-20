@@ -16,11 +16,11 @@ func main() {
 			},
 		},
 	}
-	deployer.Upload("/home/gaols/Codes/go/src/github.com/gaols/easydeploy", "/tmp/")
-	deployer.Remote("ps aufx")
-	deployer.OnceDoneDeploy(func(deployOk bool) error {
+	deployer.Upload("/home/gaols/Codes/go/src/github.com/gaols/easydeploy", "/tmp/") // you can upload any file to remote server
+	deployer.Remote("ps aufx") // you can run any shell command on remote server
+	deployer.OnceDoneDeploy(func(deployOk bool) error { // you can do some clean after deployed
 		_, err := easyssh.Local("ls -l /tmp")
 		return err
 	})
-	deployer.Start()
+	deployer.Start() // start deploy
 }
