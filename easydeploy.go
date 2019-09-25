@@ -2,12 +2,13 @@
 package easydeploy
 
 import (
-	"github.com/gaols/easyssh"
 	"fmt"
+	"github.com/gaols/easyssh"
 	"strings"
 	"time"
 )
 
+// Deploy is the deploy interface
 type Deploy interface {
 	RegisterDeployServer(srvConf *ServerConfig)
 	OnceBeforeDeploy(fn func() error)
@@ -15,6 +16,7 @@ type Deploy interface {
 	Local(cmd string, args ...interface{})
 	Remote(cmd string, args ...interface{})
 	Upload(localPath, remotePath string)
+	DownloadF(remotePath, localPath string)
 	AddCommand(command Command)
 	MaxConcurrency(num int)
 	Start() []*DeployReport
@@ -22,6 +24,7 @@ type Deploy interface {
 	isVerbose() bool
 }
 
+// DeployReport is the report of deploy process
 type DeployReport struct {
 	SrvConf  *ServerConfig
 	error    error
@@ -40,6 +43,7 @@ func (rp *DeployReport) String() string {
 	return fmt.Sprintf(report, rp.SrvConf.Simple(), rp.Cmds, rp.CmdRuns, deployResult, rp.Consumed)
 }
 
+// Deployer is the main entry point
 type Deployer struct {
 	SrvConf       []*ServerConfig
 	commands      []Command
@@ -50,7 +54,7 @@ type Deployer struct {
 	concurrency   int
 }
 
-// readonly
+// ServerConfig is the ssh server config used to connect to remote server
 type ServerConfig struct {
 	User     string
 	Server   string
@@ -78,7 +82,7 @@ func (sc *Deployer) Remote(cmd string, args ...interface{}) {
 	})
 }
 
-// Remote register a upload command
+// Upload register a upload command
 func (sc *Deployer) Upload(localPath, remotePath string) {
 	sc.commands = append(sc.commands, &UploadCommand{
 		LocalPath:  localPath,
@@ -86,7 +90,15 @@ func (sc *Deployer) Upload(localPath, remotePath string) {
 	})
 }
 
-// Register a custom command
+// DownloadF register a upload command
+func (sc *Deployer) DownloadF(localPath, remotePath string) {
+	sc.commands = append(sc.commands, &DownloadCommand{
+		RemotePath: remotePath,
+		LocalPath:  localPath,
+	})
+}
+
+// AddCommand register a custom command
 func (sc *Deployer) AddCommand(command Command) {
 	sc.commands = append(sc.commands, command)
 }
@@ -188,6 +200,7 @@ func (sc *Deployer) MaxConcurrency(num int) {
 	sc.concurrency = num
 }
 
+// MakeSSHConfig converts ServerConfig to easyssh.SSHConfig to ease using easyssh
 func (sc *ServerConfig) MakeSSHConfig() *easyssh.SSHConfig {
 	return &easyssh.SSHConfig{
 		User:     sc.User,
@@ -202,6 +215,7 @@ func (sc *ServerConfig) String() string {
 	return fmt.Sprintf("%s@%s:%s/%s", sc.User, sc.Server, sc.Port, sc.Password)
 }
 
+// Simple is too simple too naive to say anything about it
 func (sc *ServerConfig) Simple() string {
 	return fmt.Sprintf("%s@%s", sc.User, sc.Server)
 }
@@ -217,8 +231,8 @@ func NewSrvConf(format string) *ServerConfig {
 
 	return &ServerConfig{
 		User:     format[0:atIdx],
-		Server:   format[atIdx+1:semIdx],
-		Port:     format[semIdx+1:slashIdx],
+		Server:   format[atIdx+1 : semIdx],
+		Port:     format[semIdx+1 : slashIdx],
 		Password: format[slashIdx+1:],
 	}
 }
