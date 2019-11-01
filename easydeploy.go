@@ -217,7 +217,7 @@ func (sc *ServerConfig) String() string {
 
 // Simple is too simple too naive to say anything about it
 func (sc *ServerConfig) Simple() string {
-	return fmt.Sprintf("%s@%s", sc.User, sc.Server)
+	return fmt.Sprintf("%s", sc.Server)
 }
 
 // NewSrvConf parse server config from string with format: user@host:port/password

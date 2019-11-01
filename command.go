@@ -54,14 +54,17 @@ func (remoteCmd *RemoteCommand) Run(deployCtx Deploy, srvConf *ServerConfig) err
 	if isBlank(remoteCmd.CmdStr) {
 		panic("missing remote command")
 	}
-	vOutCommand(srvConf, remoteCmd.CmdStr, "remote")
+	//vOutCommand(srvConf, remoteCmd.CmdStr, "remote")
 
 	ssh := srvConf.MakeSSHConfig()
 	_, err := ssh.RtRun(remoteCmd.CmdStr, func(line string, lineType int) {
-		if deployCtx.isVerbose() {
-			vOut(srvConf, line)
-		}
+		//if deployCtx.isVerbose() {
+		//	vOut(srvConf, line)
+		//}
 	}, -1)
+	if err == nil {
+		vOut(srvConf, "command run ok")
+	}
 	return err
 }
 
