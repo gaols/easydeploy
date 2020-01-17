@@ -24,13 +24,16 @@ func TestNewSrvConf(t *testing.T) {
 func TestDeployer(t *testing.T) {
 	deployer := &Deployer{
 		SrvConf: []*ServerConfig{
-			NewSrvConf("gaols@192.168.1.100:22/123456"),
+			{
+				User:   "root",
+				Server: "192.168.2.24",
+			},
 		},
 	}
 
-	deployer.Local("/path/to/your/prepare-artifacts.sh")
-	deployer.Upload("/path/to/your/artifacts", "/path/to/remote")
-	deployer.Remote("/path/to/your/restart-server-on-remote.sh")
+	deployer.Local("cd /home/gaols;ls")
+	deployer.Upload("/home/gaols/Codes/go/src/github.com/gaols/easydeploy", "/tmp")
+	deployer.Remote("cd /tmp/easydeploy;ls")
 	deployer.OnceDoneDeploy(func(isDeployOk bool) error {
 		return nil
 	})

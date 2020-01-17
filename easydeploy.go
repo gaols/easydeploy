@@ -65,9 +65,22 @@ type ServerConfig struct {
 
 // Local register a command to be run on localhost
 func (sc *Deployer) Local(cmd string, args ...interface{}) {
-	sc.commands = append(sc.commands, &LocalCommand{
+	sc._local(false, cmd, args...)
+}
+
+// SLocal register a command to be run on localhost
+func (sc *Deployer) SLocal(cmd string, args ...interface{}) {
+	sc._local(true, cmd, args...)
+}
+
+func (sc *Deployer) _local(sensitive bool, cmd string, args ...interface{}) {
+	localCmd := &LocalCommand{
 		CmdStr: fmt.Sprintf(cmd, args...),
-	})
+	}
+	if sensitive {
+		localCmd.Sensitive()
+	}
+	sc.commands = append(sc.commands, localCmd)
 }
 
 // RegisterDeployServer register a deploy server
@@ -77,9 +90,23 @@ func (sc *Deployer) RegisterDeployServer(srvConf *ServerConfig) {
 
 // Remote register a command to be run on remote host
 func (sc *Deployer) Remote(cmd string, args ...interface{}) {
-	sc.commands = append(sc.commands, &RemoteCommand{
+	sc._remote(false, cmd, args...)
+}
+
+// Remote register a command to be run on remote host
+func (sc *Deployer) SRemote(cmd string, args ...interface{}) {
+	sc._remote(true, cmd, args...)
+}
+
+// Remote register a command to be run on remote host
+func (sc *Deployer) _remote(sensitive bool, cmd string, args ...interface{}) {
+	remoteCmd := &RemoteCommand{
 		CmdStr: fmt.Sprintf(cmd, args...),
-	})
+	}
+	if sensitive {
+		remoteCmd.Sensitive()
+	}
+	sc.commands = append(sc.commands, remoteCmd)
 }
 
 // Upload register a upload command
