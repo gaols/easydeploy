@@ -1,36 +1,41 @@
 package easydeploy
 
 import (
+	"fmt"
 	"github.com/gaols/easyssh"
 	"strings"
-	"fmt"
 )
 
 // Command is the command interface
 type Command interface {
 	Run(deployCtx Deploy, srvConf *ServerConfig) error
+	Sensitive()
 }
 
 // LocalCommand is a local command
 type LocalCommand struct {
-	CmdStr string
+	CmdStr     string
+	bSensitive bool
 }
 
 // RemoteCommand is a remote command
 type RemoteCommand struct {
-	CmdStr string
+	CmdStr     string
+	bSensitive bool
 }
 
 // UploadCommand is the upload command
 type UploadCommand struct {
 	LocalPath  string
 	RemotePath string
+	bSensitive bool
 }
 
 // DownloadCommand is the download command
 type DownloadCommand struct {
 	LocalPath  string
 	RemotePath string
+	bSensitive bool
 }
 
 // Run the local command
@@ -39,7 +44,9 @@ func (localCmd *LocalCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error
 		panic("missing local command")
 	}
 
-	vOutCommand(srvConf, localCmd.CmdStr, "local")
+	if !localCmd.bSensitive {
+		vOutCommand(srvConf, localCmd.CmdStr, "local")
+	}
 	err := easyssh.RtLocal(localCmd.CmdStr, func(line string, lineType int8) {
 		if deployCtx.isVerbose() {
 			vOut(srvConf, line)
@@ -49,18 +56,24 @@ func (localCmd *LocalCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error
 	return err
 }
 
+func (localCmd *LocalCommand) Sensitive() {
+	localCmd.bSensitive = true
+}
+
 // Run the remote command on the remote server 
 func (remoteCmd *RemoteCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
 	if isBlank(remoteCmd.CmdStr) {
 		panic("missing remote command")
 	}
-	//vOutCommand(srvConf, remoteCmd.CmdStr, "remote")
+	if !remoteCmd.bSensitive {
+		vOutCommand(srvConf, remoteCmd.CmdStr, "remote")
+	}
 
 	ssh := srvConf.MakeSSHConfig()
 	_, err := ssh.RtRun(remoteCmd.CmdStr, func(line string, lineType int) {
-		//if deployCtx.isVerbose() {
-		//	vOut(srvConf, line)
-		//}
+		if deployCtx.isVerbose() {
+			vOut(srvConf, line)
+		}
 	}, -1)
 	if err == nil {
 		vOut(srvConf, "command run ok")
@@ -68,24 +81,32 @@ func (remoteCmd *RemoteCommand) Run(deployCtx Deploy, srvConf *ServerConfig) err
 	return err
 }
 
+func (remoteCmd *RemoteCommand) Sensitive() {
+	remoteCmd.bSensitive = true
+}
+
 // Run the download command 
-func (uploadCmd *DownloadCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
-	if isBlank(uploadCmd.LocalPath) {
+func (downloadCmd *DownloadCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
+	if isBlank(downloadCmd.LocalPath) {
 		panic("missing local path for downloading")
 	}
 
-	if isBlank(uploadCmd.RemotePath) {
+	if isBlank(downloadCmd.RemotePath) {
 		panic("missing remote path for downloading")
 	}
-	downloadM := fmt.Sprintf("%s -> %s", uploadCmd.RemotePath, uploadCmd.LocalPath)
+	downloadM := fmt.Sprintf("%s -> %s", downloadCmd.RemotePath, downloadCmd.LocalPath)
 	vOutCommand(srvConf, downloadM, "download")
 
 	ssh := srvConf.MakeSSHConfig()
-	err := ssh.DownloadF(uploadCmd.RemotePath, uploadCmd.LocalPath)
+	err := ssh.DownloadF(downloadCmd.RemotePath, downloadCmd.LocalPath)
 	if err == nil && deployCtx.isVerbose() {
 		vOut(srvConf, fmt.Sprintf("%s download ok", downloadM))
 	}
 	return err
+}
+
+func (downloadCmd *DownloadCommand) Sensitive() {
+	downloadCmd.bSensitive = true
 }
 
 // Run the upload command 
@@ -98,7 +119,9 @@ func (uploadCmd *UploadCommand) Run(deployCtx Deploy, srvConf *ServerConfig) err
 		panic("missing remote path for uploading")
 	}
 	uploadM := fmt.Sprintf("%s -> %s", uploadCmd.LocalPath, uploadCmd.RemotePath)
-	vOutCommand(srvConf, uploadM, "upload")
+	if !uploadCmd.bSensitive {
+		vOutCommand(srvConf, uploadM, "upload")
+	}
 
 	ssh := srvConf.MakeSSHConfig()
 	err := ssh.SafeScp(uploadCmd.LocalPath, uploadCmd.RemotePath)
@@ -106,6 +129,10 @@ func (uploadCmd *UploadCommand) Run(deployCtx Deploy, srvConf *ServerConfig) err
 		vOut(srvConf, fmt.Sprintf("%s upload ok", uploadM))
 	}
 	return err
+}
+
+func (uploadCmd *UploadCommand) Sensitive() {
+	uploadCmd.bSensitive = true
 }
 
 func isBlank(str string) bool {
@@ -122,8 +149,13 @@ func vOutCommand(srvConf *ServerConfig, cmd string, cmdType string) {
 
 // SimpleCommand represents a simple customized command
 type SimpleCommand struct {
-	Handler func(Deploy, *ServerConfig, ...interface{}) error
-	Args    []interface{}
+	Handler    func(Deploy, *ServerConfig, ...interface{}) error
+	Args       []interface{}
+	bSensitive bool
+}
+
+func (cmd *SimpleCommand) Sensitive() {
+	cmd.bSensitive = true
 }
 
 // Run this simple customized command 
@@ -134,7 +166,8 @@ func (cmd *SimpleCommand) Run(deployCtx Deploy, srvConf *ServerConfig) error {
 // BuildSimpleCommand build the simple command
 func BuildSimpleCommand(fn func(Deploy, *ServerConfig, ...interface{}) error, args ...interface{}) Command {
 	return &SimpleCommand{
-		Handler: fn,
-		Args:    args,
+		Handler:    fn,
+		Args:       args,
+		bSensitive: false,
 	}
 }

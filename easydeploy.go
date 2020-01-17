@@ -113,7 +113,7 @@ func (sc *Deployer) Start() []*DeployReport {
 	if sc.onceBeforeFn != nil {
 		err := sc.onceBeforeFn()
 		if err != nil {
-			sc.onceDoneFn(false)
+			_ = sc.onceDoneFn(false)
 			return nil
 		}
 	}
