@@ -2,10 +2,10 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fatih/color v1.7.0 h1:DkWD4oS2D8LGGgTQ6IvwJJXSL5Vp2ffcQg58nFV38Ys=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
-github.com/gaols/easyssh v1.0.4 h1:KJqK8X7Hpc1a0XvdCtwPzigRqvQYqclI2WA6m0/B34o=
-github.com/gaols/easyssh v1.0.4/go.mod h1:vUFCTZYMhqEUIz+hO3K6WY4ddXKKya81JiPk7oolOtE=
-github.com/gaols/goutils v1.2.1 h1:YPwTD5PCKXa0aztmTHUEA2ywdS3KUWNscaB+zJRkcYE=
-github.com/gaols/goutils v1.2.1/go.mod h1:jD4+DRYCBOVtG8mT28fVqnUWG+OrscTB6zHHj5UT6hE=
+github.com/gaols/easyssh v1.0.5 h1:k4GH7Kg7kQU5WK3T4yiJ118F0xGl3gGml9Qjf+ycVX0=
+github.com/gaols/easyssh v1.0.5/go.mod h1:I8tUbygsIiaChrp04kQmh2hgAlL/rCZ+v2debEChQvg=
+github.com/gaols/goutils v1.2.3 h1:86gZvx/xcrp3p70OO7LzYNSizx0+FQkXR4pwC8kj8N8=
+github.com/gaols/goutils v1.2.3/go.mod h1:jD4+DRYCBOVtG8mT28fVqnUWG+OrscTB6zHHj5UT6hE=
 github.com/kr/fs v0.1.0 h1:Jskdu9ieNAYnjxsi0LbQp1ulIKZV1LAFgK1tWhpZgl8=
 github.com/kr/fs v0.1.0/go.mod h1:FFnZGqtBN9Gxj7eW1uZ42v5BccTP0vu6NEaFoC2HwRg=
 github.com/mattn/go-colorable v0.1.2 h1:/bC9yWikZXAL9uJdulbSfyVNIR3n3trXl+v8+1sx8mU=
@@ -15,8 +15,8 @@ github.com/mattn/go-isatty v0.0.9 h1:d5US/mDsogSGW37IV293h//ZFaeajb69h+EHFsv2xGg
 github.com/mattn/go-isatty v0.0.9/go.mod h1:YNRxwqDuOph6SZLI9vUUz6OYw3QyUt7WiY2yME+cCiQ=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
-github.com/pkg/sftp v1.10.1 h1:VasscCm72135zRysgrJDKsntdmPN+OuU3+nnHYA9wyc=
-github.com/pkg/sftp v1.10.1/go.mod h1:lYOWFsE0bwd1+KfKJaKeuokY15vzFx25BLbzYYoAxZI=
+github.com/pkg/sftp v1.11.0 h1:4Zv0OGbpkg4yNuUtH0s8rvoYxRCNyT29NVUo6pgPmxI=
+github.com/pkg/sftp v1.11.0/go.mod h1:lYOWFsE0bwd1+KfKJaKeuokY15vzFx25BLbzYYoAxZI=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
