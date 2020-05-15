@@ -2,8 +2,8 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fatih/color v1.7.0 h1:DkWD4oS2D8LGGgTQ6IvwJJXSL5Vp2ffcQg58nFV38Ys=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
-github.com/gaols/easyssh v1.0.5 h1:k4GH7Kg7kQU5WK3T4yiJ118F0xGl3gGml9Qjf+ycVX0=
-github.com/gaols/easyssh v1.0.5/go.mod h1:I8tUbygsIiaChrp04kQmh2hgAlL/rCZ+v2debEChQvg=
+github.com/gaols/easyssh v1.0.8 h1:V68nmcI9DUBwAZwzkzJo/T83K/1ah47gijdhfcdMMu8=
+github.com/gaols/easyssh v1.0.8/go.mod h1:I8tUbygsIiaChrp04kQmh2hgAlL/rCZ+v2debEChQvg=
 github.com/gaols/goutils v1.2.3 h1:86gZvx/xcrp3p70OO7LzYNSizx0+FQkXR4pwC8kj8N8=
 github.com/gaols/goutils v1.2.3/go.mod h1:jD4+DRYCBOVtG8mT28fVqnUWG+OrscTB6zHHj5UT6hE=
 github.com/kr/fs v0.1.0 h1:Jskdu9ieNAYnjxsi0LbQp1ulIKZV1LAFgK1tWhpZgl8=
